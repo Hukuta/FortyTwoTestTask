@@ -1,7 +1,11 @@
-42-test template
+42-test task
 ===========================
 
-A Django 1.6+ project template
+A Django 1.6+ project 
+
+Create basic django-project that would present your name, 
+surname, date of birth, bio, contacts on the main page.
+Data should be stored in the DB.
 
 Use fortytwo_test_task.settings when deploying with getbarista.com
 
