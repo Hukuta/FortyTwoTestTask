@@ -41,7 +41,7 @@ class IndexPage(TestCase):
         count_before = Req.objects.count()
         self.client.get(reverse('home'))
         count_after = Req.objects.count()
-        self.assertGreater(count_before, count_after)
+        self.assertGreater(count_after, count_before)
 
     def test_ajax(self):
         self.client.get(reverse('home'))
