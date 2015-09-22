@@ -1,6 +1,7 @@
 """ Test for Task 1 """
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from apps.hello.models import Person
 
 
 class IndexPage(TestCase):
@@ -15,3 +16,9 @@ class IndexPage(TestCase):
                 '02.02.1992', 'odarchenko.n.d@gmail.com']
         for search_str in data:
             self.assertContains(page, search_str, 1)
+
+    def test_unicode_render(self):
+        """ Test __unicode__ method of model.Person """
+        person = Person.objects.get(pk=1)
+        full_name = repr(person)
+        self.assertTrue(person.first_name in full_name)
