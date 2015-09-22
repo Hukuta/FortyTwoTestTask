@@ -1,0 +1,26 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    {% load static %}
+    <title>({{ total }}) Last 10 Requests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//getskeleton.com/dist/css/normalize.css">
+    <link rel="stylesheet" href="//getskeleton.com/dist/css/skeleton.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="{% static 'js/requests.js' %}"></script>
+</head>
+<body>
+
+<div class="section">
+    <div class="container">
+        <h3 class="section-heading">Last 10 Requests</h3>
+        <div class="row">
+            <div class="one-half column" id="requests">
+                <!-- will load from ajax -->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
