@@ -45,11 +45,14 @@ class IndexPage(TestCase):
 
     def test_ajax(self):
         self.client.get(reverse('home'))
+        count_before = Req.objects.count()
         ajax = self.client.get(
             reverse('requests'),
             {'read': []},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
+        count_after = Req.objects.count()
+        self.assertEqual(count_before, count_after)
         data = json.loads(ajax.content.decode())
         self.assertGreater(int(data['total']), 0)
         self.assertTrue('requests' in data)
