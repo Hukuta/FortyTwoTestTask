@@ -58,3 +58,8 @@ class IndexPage(TestCase):
         self.assertGreater(int(data['total']), 0)
         self.assertTrue('requests' in data)
         self.assertGreaterEqual(data['total'], len(data['requests']))
+
+    def test_template_usage(self):
+        """ Test correct template """
+        page = self.client.get(reverse('requests'))
+        self.assertTemplateUsed(page, 'requests.html')
