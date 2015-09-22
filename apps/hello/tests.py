@@ -44,6 +44,7 @@ class IndexPage(TestCase):
         self.assertGreater(count_after, count_before)
 
     def test_ajax(self):
+        """ Test ajax request """
         self.client.get(reverse('home'))
         count_before = Req.objects.count()
         ajax = self.client.get(
