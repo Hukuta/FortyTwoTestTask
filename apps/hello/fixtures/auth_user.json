@@ -1,0 +1,18 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$12000$NvozTUwYQ1ii$6aOxSzpcFWLDooaqm2xHjWn/xDrAg/mvRDRFNwpd2Xo=",
+      "last_login": "2015-09-21 18:47:05.257817",
+      "is_superuser": 1,
+      "username": "developer",
+      "first_name": "",
+      "last_name": "",
+      "email": "phpdreamer@rambler.ru",
+      "is_staff": 1,
+      "is_active": 1,
+      "date_joined": "2015-09-21 18:47:05.257817"
+    }
+  }
+]
