@@ -1,7 +1,10 @@
-""" Test for Task 1 """
+""" Tests for Tasks """
+import re
+import json
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from apps.hello.models import Person
+from apps.hello.models import Req
 
 
 class IndexPage(TestCase):
@@ -22,3 +25,32 @@ class IndexPage(TestCase):
         person = Person.objects.get(pk=1)
         full_name = repr(person)
         self.assertTrue(person.first_name in full_name)
+
+    def test_page_title(self):
+        """ page title should start with (N) N=new requests """
+        self.client.get(reverse('home'))
+        page = self.client.get(reverse('requests'))
+        self.assertContains(page, '<title>(', 1)
+        match = re.search('<title>\(([^<]+)\)([^<]+)</', page.content)
+        self.assertIsNotNone(match)
+        # requests > 0
+        self.assertGreater(int(match.group(1)), 0)
+
+    def test_middleware(self):
+        """ Test adding data to database """
+        count_before = Req.objects.count()
+        self.client.get(reverse('home'))
+        count_after = Req.objects.count()
+        self.assertGreater(count_before, count_after)
+
+    def test_ajax(self):
+        self.client.get(reverse('home'))
+        ajax = self.client.get(
+            reverse('requests'),
+            {'read': []},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        data = json.loads(ajax.content.decode())
+        self.assertGreater(int(data['total']), 0)
+        self.assertTrue('requests' in data)
+        self.assertGreaterEqual(data['total'], len(data['requests']))

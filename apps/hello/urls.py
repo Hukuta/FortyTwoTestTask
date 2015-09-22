@@ -10,6 +10,7 @@ __author__ = 'Odarchenko N.D.'
 urlpatterns = patterns(
     '',
     url(r'^$', views.index, name='home'),
+    url(r'^requests$', views.requests, name='requests'),
 
 )
 
