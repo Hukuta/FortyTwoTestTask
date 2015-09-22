@@ -1,5 +1,5 @@
-from .common import * # NOQA
+from .common import *  # NOQA
 try:
-    from .local import * # NOQA
+    from .local import *  # NOQA
 except ImportError:
     pass
