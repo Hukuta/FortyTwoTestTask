@@ -19,4 +19,8 @@ class Person(models.Model):
 
 class Req(models.Model):
     # HTTP Requests
-    pass
+    info = models.TextField()
+    read = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.info
