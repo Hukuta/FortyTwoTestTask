@@ -1,0 +1,36 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>42cc test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//getskeleton.com/dist/css/normalize.css">
+    <link rel="stylesheet" href="//getskeleton.com/dist/css/skeleton.css">
+</head>
+<body>
+
+<div class="section">
+    <div class="container">
+        <h3 class="section-heading">42 Coffee Cups Test Assignment</h3>
+
+        <div class="row">
+            <div class="one-half column">
+                {{ person.first_name }}<br>
+                {{ person.last_name }}<br>
+                {{ person.date_of_birth|date:"d.m.Y" }}<br>
+                <br>Bio:<br>
+                {{ person.bio }}
+            </div>
+            <div class="one-half column">
+                Contacts<br>
+                Email: {{ person.email }}<br>
+                Jabber: {{ person.jabber }}<br>
+                Skype: {{ person.skype }}<br>
+                <br>Other contacts:<br>
+                {{ person.contacts }}
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

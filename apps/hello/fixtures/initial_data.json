@@ -1,0 +1,16 @@
+[
+  {
+    "model": "hello.Person",
+    "pk": 1,
+    "fields": {
+      "first_name": "Nikita",
+      "last_name": "Odarchenko",
+      "date_of_birth": "1992-02-02",
+      "contacts": "ICQ 912564",
+      "bio": "Ukrainian developer",
+      "email": "odarchenko.n.d@gmail.com",
+      "jabber": "hukuta@khavr.com",
+      "skype": "phpdreamer"
+    }
+  }
+]
