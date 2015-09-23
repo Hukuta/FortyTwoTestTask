@@ -150,7 +150,7 @@ class EditPage(TestCase):
             'skype': 'skypeid'
         }
         photo = SimpleUploadedFile(photo.name,
-                                                        photo.read())
+                                   photo.read())
         form = ProfileForm(data, dict(photo=photo), instance=person)
         self.assertTrue(form.is_valid())
         form.save()
