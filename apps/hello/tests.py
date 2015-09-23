@@ -78,7 +78,7 @@ class EditPage(TestCase):
                                  self.tester)
 
     def test_need_auth(self):
-        # only logged in user cat see form
+        """ Only logged in user cat see form """
         before = self.client.get(reverse('edit_data'))
         self.client.login(username=self.tester, password=self.tester)
         after = self.client.get(reverse('edit_data'))
