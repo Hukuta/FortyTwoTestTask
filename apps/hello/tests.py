@@ -6,6 +6,7 @@ from apps.hello.models import Person
 
 class IndexPage(TestCase):
     """ Test for IndexPage """
+
     def test_main_page(self):
         """ Test that home page is available
             and contains my personal data
@@ -22,3 +23,8 @@ class IndexPage(TestCase):
         person = Person.objects.get(pk=1)
         full_name = repr(person)
         self.assertTrue(person.first_name in full_name)
+
+    def test_template_usage(self):
+        """ Test correct template used """
+        self.assertTemplateUsed(self.client.get(reverse('home')),
+                                'index.html')
