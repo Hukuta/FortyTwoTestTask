@@ -1,4 +1,5 @@
 """My models"""
+import os
 from django.db import models
 from PIL import Image
 
@@ -30,6 +31,11 @@ class Person(models.Model):
                 if width > 200 or height > 200:
                     image.thumbnail((200, 200), Image.ANTIALIAS)
                     image.save(filename)
+                if not os.path.isdir('assets/photo'):
+                    os.mkdir('assets/photo', 0777)
+                target = 'assets/photo/' + filename.split('/')[-1]
+                if not os.path.isfile(target):
+                    os.symlink(filename, target)
             except IOError as err:
                 print err
                 self.photo = None
