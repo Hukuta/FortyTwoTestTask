@@ -1,6 +1,9 @@
 """ Test for Task 1 """
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.contrib.admin.sites import AdminSite
+from apps.hello.admin import AdminPersons
 from apps.hello.models import Person
 
 
@@ -28,3 +31,48 @@ class IndexPage(TestCase):
         """ Test correct template used """
         self.assertTemplateUsed(self.client.get(reverse('home')),
                                 'index.html')
+
+
+class MockRequest(object):
+    pass
+
+
+class MockSuperUser(object):
+    def has_perm(self, perm):
+        return True
+
+
+request = MockRequest()
+request.user = MockSuperUser()
+
+
+class AdminActions(TestCase):
+    """ Test for adminCP """
+
+    def setUp(self):
+        self.app_admin_persons = AdminPersons(Person, AdminSite())
+        self.tester = 'admin'
+        User.objects.create_superuser(self.tester, 'admin@test.com',
+                                      self.tester)
+
+    def test_person_update_form(self):
+        """ Test person form in adminCP """
+        need_fields = ['first_name', 'last_name', 'date_of_birth',
+                       'contacts', 'bio', 'email', 'jabber', 'skype']
+        base_fields = list(self.app_admin_persons.get_form(request).base_fields)
+        self.assertEqual(base_fields, need_fields)
+
+    def test_admin_cp_is_available(self):
+        """ Test admin CP is available for login """
+        self.client.logout()
+        self.assertContains(self.client.get('/admin/'), 'Log in')
+        self.client.login(username=self.tester, password=self.tester)
+        self.assertNotContains(self.client.get('/admin/'), 'Log in')
+
+    def test_person_edit_form(self):
+        """ Test edit form loading for update person """
+        person = Person.objects.get(pk=1)
+        self.client.login(username=self.tester, password=self.tester)
+        page_uri = '/admin/hello/person/1/'
+        page = self.client.get(page_uri)
+        self.assertEqual(page.context['fieldset'].form.instance, person)
