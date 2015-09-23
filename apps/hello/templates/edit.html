@@ -22,17 +22,36 @@
 <div class="section">
     <div class="container">
         <h3 class="section-heading">Person Edit Page</h3>
+
         <div class="row">
             <div class="one-half column">
-                <div id="ajax_answer"></div>
                 <form method="POST" enctype="multipart/form-data" id="main_form">
+                    <div class="row">
+                        <div class="one-half column" id="col_1"></div>
+                        <div class="one-half column" id="col_2"></div>
+                    </div>
                     {% csrf_token %}
-                    {{ form }}
+                    <div id="photo_html">{{ form }}</div>
                     <input type="hidden" name="next" value="{% url 'edit_data' %}">
-                    <div>
-                        <input type="submit">
+
+                    <div id="ajax_answer"></div>
+                    <div class="row">
+                        {% if form.widget %}
+                            <input type="submit" value="Save">
+                            &nbsp;&nbsp;&nbsp;
+                            <a href="{% url 'edit_data' %}">Cancel</a>
+                        {% else %}
+                            <input type="submit">
+                        {% endif %}
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <hr/>
+        <div class="row">
+            <div class="one-half column">
+                <a href="{% url 'requests' %}">requests</a>
             </div>
         </div>
     </div>

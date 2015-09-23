@@ -11,15 +11,19 @@
 
 <div class="section">
     <div class="container">
-        <h3 class="section-heading">42 Coffee Cups Test Assignment</h3>
 
+        <div class="row">
+            <div class="ten columns"><h3 class="section-heading">42 Coffee Cups Test Assignment</h3></div>
+            <div class="two columns"><a href="{% url 'edit_data' %}">Login</a></div>
+        </div>
         <div class="row">
             <div class="one-half column">
                 {{ person.first_name }}<br>
                 {{ person.last_name }}<br>
                 {{ person.date_of_birth|date:"d.m.Y" }}<br>
-                <br>Bio:<br>
-                {{ person.bio }}
+                Photo:<br>
+                <img src="{{ person.get_img_url }}" alt="Photo">
+
             </div>
             <div class="one-half column">
                 Contacts<br>
@@ -28,6 +32,8 @@
                 Skype: {{ person.skype }}<br>
                 <br>Other contacts:<br>
                 {{ person.contacts }}
+                <br><br>Bio:<br>
+                {{ person.bio }}
             </div>
         </div>
         <hr />

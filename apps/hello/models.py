@@ -35,6 +35,13 @@ class Person(models.Model):
                 self.photo = None
                 super(Person, self).save()
 
+    def get_img_url(self):
+        try:
+            return self.photo.url.replace('uploads/', 'static/')
+        except ValueError:
+            # 1 px transparent image
+            return '/static/img/no_image.png'
+
 
 class Req(models.Model):
     # HTTP Requests

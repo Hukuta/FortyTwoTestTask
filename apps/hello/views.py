@@ -44,14 +44,17 @@ def edit(request):
         if request.method == "POST":
             form = ProfileForm(request.POST, request.FILES,
                                instance=my_data)
+            resp = dict(ok=0)
             if form.is_valid():
                 form.save()
-                return HttpResponse('"OK"')
+                resp['ok'] = 1
+                resp['image'] = my_data.get_img_url()
             else:
                 errors = dict()
                 for error in form.errors:
                     errors[error] = form.errors[error]
-            return HttpResponse(json.dumps(errors))
+                resp['errors'] = errors
+            return HttpResponse(json.dumps(resp))
         else:
             form = ProfileForm(instance=my_data)
             return render(request, 'edit.html', dict(form=form))
