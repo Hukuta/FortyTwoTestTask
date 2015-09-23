@@ -1,6 +1,7 @@
 """ Tests for Tasks """
 import re
 import json
+from datetime import date
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -105,7 +106,7 @@ class EditPage(TestCase):
             'first_name': 'firstname',
             'last_name': 'lastname',
             # date mistake
-            'date_of_birth': '01.41.1991',
+            'date_of_birth': '1991-01-41',
             'contacts': 'contacts',
             'bio': 'bio',
             # email mistake
@@ -119,11 +120,13 @@ class EditPage(TestCase):
         for field in ('date_of_birth', 'email', 'skype'):
             self.assertNotEqual(getattr(person, field),
                                 ajax_post[field])
-        ajax_post['date_of_birth'] = '01.01.1991'
+        ajax_post['date_of_birth'] = '1991-01-01'
         ajax_post['email'] = 'email@email.ru'
         ajax_post['skype'] = 'skypeid'
         self.client.post(reverse('edit_data'), ajax_post)
         person = Person.objects.get(pk=1)
         for field in ajax_post.keys():
-            self.assertEqual(getattr(person, field),
-                             ajax_post[field])
+            value = getattr(person, field)
+            if isinstance(value, date):
+                value = value.strftime("%Y-%m-%d")
+            self.assertEqual(value, ajax_post[field])
