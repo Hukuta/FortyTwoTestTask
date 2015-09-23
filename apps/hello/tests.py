@@ -10,6 +10,7 @@ from apps.hello.models import Req
 
 class IndexPage(TestCase):
     """ Test for IndexPage """
+
     def test_main_page(self):
         """ Test that home page is available
             and contains my personal data
@@ -68,6 +69,7 @@ class IndexPage(TestCase):
 
 class EditPage(TestCase):
     """ Test edit Person Profile page  """
+
     def setUp(self):
         # create test user
         self.tester = 'tester'
@@ -116,7 +118,7 @@ class EditPage(TestCase):
         person = Person.objects.get(pk=1)
         for field in ('date_of_birth', 'email', 'skype'):
             self.assertNotEqual(getattr(person, field),
-                                    ajax_post[field])
+                                ajax_post[field])
         ajax_post['date_of_birth'] = '01.01.1991'
         ajax_post['email'] = 'email@email.ru'
         ajax_post['skype'] = 'skypeid'
@@ -124,4 +126,4 @@ class EditPage(TestCase):
         person = Person.objects.get(pk=1)
         for field in ajax_post.keys():
             self.assertEqual(getattr(person, field),
-                                    ajax_post[field])
+                             ajax_post[field])
