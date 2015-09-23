@@ -2,6 +2,7 @@
 import re
 import json
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 from django.test import TestCase
 from apps.hello.models import Person
 from apps.hello.models import Req
@@ -63,3 +64,64 @@ class IndexPage(TestCase):
         """ Test correct template """
         page = self.client.get(reverse('requests'))
         self.assertTemplateUsed(page, 'requests.html')
+
+
+class EditPage(TestCase):
+    """ Test edit Person Profile page  """
+    def setUp(self):
+        # create test user
+        self.tester = 'tester'
+        User.objects.create_user(self.tester, 'test@test.com',
+                                 self.tester)
+
+    def test_need_auth(self):
+        # only logged in user cat see form
+        before = self.client.get(reverse('edit_data'))
+        self.client.login(username=self.tester, password=self.tester)
+        after = self.client.get(reverse('edit_data'))
+        form_before = before.context['form']
+        form_after = after.context['form']
+        self.assertIsNone(form_before.initial.get('first_name'))
+        self.assertIsNotNone(form_after.initial.get('first_name'))
+
+    def test_edit_page_data(self):
+        """ Testing initial data from context """
+        self.client.login(username=self.tester, password=self.tester)
+        page = self.client.get(reverse('edit_data'))
+        form = page.context['form']
+        person = Person.objects.get(pk=1)
+        for field in person._meta.get_all_field_names():
+            self.assertEqual(form.initial[field],
+                             getattr(person, field))
+
+    def test_ajax_post(self):
+        """ Testing ajax request saves changes """
+        self.client.login(username=self.tester, password=self.tester)
+        person = Person.objects.get(pk=1)
+        self.client.post(reverse('edit_data'))
+        ajax_post = {
+            'first_name': 'firstname',
+            'last_name': 'lastname',
+            # date mistake
+            'date_of_birth': '01.41.1991',
+            'contacts': 'contacts',
+            'bio': 'bio',
+            # email mistake
+            'email': 'email@email',
+            'jabber': 'email@email.ru',
+            # empty field
+            'skype': '',
+        }
+        self.client.post(reverse('edit_data'), ajax_post)
+        person = Person.objects.get(pk=1)
+        for field in ('date_of_birth', 'email', 'skype'):
+            self.assertNotEqual(getattr(person, field),
+                                    ajax_post[field])
+        ajax_post['date_of_birth'] = '01.01.1991'
+        ajax_post['email'] = 'email@email.ru'
+        ajax_post['skype'] = 'skypeid'
+        self.client.post(reverse('edit_data'), ajax_post)
+        person = Person.objects.get(pk=1)
+        for field in ajax_post.keys():
+            self.assertEqual(getattr(person, field),
+                                    ajax_post[field])
