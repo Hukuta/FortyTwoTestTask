@@ -195,7 +195,7 @@ class AdminActions(TestCase):
     def test_person_update_form(self):
         """ Test person form in adminCP """
         need_fields = ['first_name', 'last_name', 'date_of_birth',
-                       'contacts', 'bio', 'email', 'jabber', 
+                       'contacts', 'bio', 'email', 'jabber',
                        'skype', 'photo']
         base_fields = self.app_admin_persons.get_form(request).base_fields
         self.assertEqual(list(base_fields), need_fields)
