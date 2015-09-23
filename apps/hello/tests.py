@@ -195,9 +195,10 @@ class AdminActions(TestCase):
     def test_person_update_form(self):
         """ Test person form in adminCP """
         need_fields = ['first_name', 'last_name', 'date_of_birth',
-                       'contacts', 'bio', 'email', 'jabber', 'skype', 'photo']
-        base_fields = list(self.app_admin_persons.get_form(request).base_fields)
-        self.assertEqual(base_fields, need_fields)
+                       'contacts', 'bio', 'email', 'jabber', 
+                       'skype', 'photo']
+        base_fields = self.app_admin_persons.get_form(request).base_fields
+        self.assertEqual(list(base_fields), need_fields)
 
     def test_admin_cp_is_available(self):
         """ Test admin CP is available for login """
@@ -213,41 +214,3 @@ class AdminActions(TestCase):
         page_uri = '/admin/hello/person/1/'
         page = self.client.get(page_uri)
         self.assertEqual(page.context['fieldset'].form.instance, person)
-
-    def test_page_title(self):
-        """ page title should start with (N) N=new requests """
-        self.client.get(reverse('home'))
-        page = self.client.get(reverse('requests'))
-        self.assertContains(page, '<title>(', 1)
-        match = re.search('<title>\(([^<]+)\)([^<]+)</', page.content)
-        self.assertIsNotNone(match)
-        # requests > 0
-        self.assertGreater(int(match.group(1)), 0)
-
-    def test_middleware(self):
-        """ Test adding data to database """
-        count_before = Req.objects.count()
-        self.client.get(reverse('home'))
-        count_after = Req.objects.count()
-        self.assertGreater(count_after, count_before)
-
-    def test_ajax(self):
-        """ Test ajax request """
-        self.client.get(reverse('home'))
-        count_before = Req.objects.count()
-        ajax = self.client.get(
-            reverse('requests'),
-            {'read': []},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
-        count_after = Req.objects.count()
-        self.assertEqual(count_before, count_after)
-        data = json.loads(ajax.content.decode())
-        self.assertGreater(int(data['total']), 0)
-        self.assertTrue('requests' in data)
-        self.assertGreaterEqual(data['total'], len(data['requests']))
-
-    def test_template_usage(self):
-        """ Test correct template """
-        page = self.client.get(reverse('requests'))
-        self.assertTemplateUsed(page, 'requests.html')
