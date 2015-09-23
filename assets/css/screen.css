@@ -1,1 +1,4 @@
- 
+.errors p{
+    color: #ff7a2c;
+    margin: 0;
+}

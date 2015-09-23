@@ -11,6 +11,7 @@ urlpatterns = patterns(
     '',
     url(r'^$', views.index, name='home'),
     url(r'^requests$', views.requests, name='requests'),
+    url(r'^edit$', views.edit, name='edit_data'),
 
 )
 
