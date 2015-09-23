@@ -32,6 +32,11 @@ class IndexPage(TestCase):
         full_name = repr(person)
         self.assertTrue(person.first_name in full_name)
 
+    def test_template_usage(self):
+        """ Test correct template used """
+        self.assertTemplateUsed(self.client.get(reverse('home')),
+                                'index.html')
+
     def test_page_title(self):
         """ page title should start with (N) N=new requests """
         self.client.get(reverse('home'))
@@ -161,3 +166,5 @@ class EditPage(TestCase):
         image_resized = Image.open(person.photo)
         self.assertLessEqual(image_resized.height, 200)
         self.assertLessEqual(image_resized.width, 200)
+
+    
