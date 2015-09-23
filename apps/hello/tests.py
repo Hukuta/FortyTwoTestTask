@@ -59,8 +59,8 @@ class AdminActions(TestCase):
         """ Test person form in adminCP """
         need_fields = ['first_name', 'last_name', 'date_of_birth',
                        'contacts', 'bio', 'email', 'jabber', 'skype']
-        base_fields = list(self.app_admin_persons.get_form(request).base_fields)
-        self.assertEqual(base_fields, need_fields)
+        base_fields = self.app_admin_persons.get_form(request).base_fields
+        self.assertEqual(list(base_fields), need_fields)
 
     def test_admin_cp_is_available(self):
         """ Test admin CP is available for login """
