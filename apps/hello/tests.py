@@ -2,9 +2,12 @@
 import re
 import json
 from datetime import date
+from PIL import Image
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from apps.hello.forms import ProfileForm
 from apps.hello.models import Person
 from apps.hello.models import Req
 
@@ -130,3 +133,31 @@ class EditPage(TestCase):
             if isinstance(value, date):
                 value = value.strftime("%Y-%m-%d")
             self.assertEqual(value, ajax_post[field])
+
+    def test_resize_image(self):
+        """ Testing image save """
+        person = Person.objects.get(pk=1)
+        self.assertEqual(person.get_img_url(), '/static/img/no_image.png')
+        photo = open('assets/img/no_image_test.png', 'rb')
+        data = {
+            'first_name': 'firstname',
+            'last_name': 'lastname',
+            'date_of_birth': '1991-01-01',
+            'contacts': 'contacts',
+            'bio': 'bio',
+            'email': 'email@email.ru',
+            'jabber': 'email@email.ru',
+            'skype': 'skypeid'
+        }
+        photo = SimpleUploadedFile(photo.name,
+                                                        photo.read())
+        form = ProfileForm(data, dict(photo=photo), instance=person)
+        self.assertTrue(form.is_valid())
+        form.save()
+        person = Person.objects.get(pk=1)
+
+        self.assertNotEqual(person.get_img_url(),
+                            '/static/img/no_image.png')
+        image_resized = Image.open(person.photo)
+        self.assertLessEqual(image_resized.height, 200)
+        self.assertLessEqual(image_resized.width, 200)
