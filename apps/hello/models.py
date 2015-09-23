@@ -1,5 +1,6 @@
 """My models"""
 from django.db import models
+from PIL import Image
 
 
 class Person(models.Model):
@@ -12,9 +13,27 @@ class Person(models.Model):
     email = models.EmailField()
     jabber = models.EmailField()
     skype = models.CharField(max_length=50)
+    photo = models.ImageField(upload_to='photo', null=True, default=None)
 
     def __unicode__(self):
         return self.first_name + ' ' + self.last_name
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=True):
+
+        super(Person, self).save()
+        if self.photo:
+            filename = self.photo.path
+            try:
+                image = Image.open(filename)
+                width, height = image.size
+                if width > 200 or height > 200:
+                    image.thumbnail((200, 200), Image.ANTIALIAS)
+                    image.save(filename)
+            except IOError as err:
+                print err
+                self.photo = None
+                super(Person, self).save()
 
 
 class Req(models.Model):
