@@ -105,17 +105,18 @@ class ReqPage(TestCase):
         req = Req.objects.last()
         self.assertEqual(req.priority, 0)
         data = {'read': [req.pk], 'priority1': [req.pk]}
-        self.client.get(reverse('requests'), data,
-                        HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        req = Req.objects.last()
-        self.assertEqual(req.priority, 1)
+        self.client.post(reverse('requests'), data,
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        req_same = Req.objects.last()
+        self.assertEqual(req_same.pk, req.pk)
+        self.assertEqual(req_same.priority, 1)
         self.client.get(reverse('home'))
         req2 = Req.objects.last()
         self.assertEqual(req2.priority, 1)
         self.assertNotEqual(req2, req)
         data = {'read': [req.pk], 'priority0': [req.pk]}
-        self.client.get(reverse('requests'), data,
-                        HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.client.post(reverse('requests'), data,
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         req2 = Req.objects.last()
         self.assertEqual(req2.priority, 0)
 
