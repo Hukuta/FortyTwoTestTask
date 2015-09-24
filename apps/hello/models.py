@@ -53,6 +53,7 @@ class Req(models.Model):
     # HTTP Requests
     info = models.TextField()
     read = models.BooleanField(default=False)
+    priority = models.IntegerField(default=0)
 
     def __unicode__(self):
         return self.info
