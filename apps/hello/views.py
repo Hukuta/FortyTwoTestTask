@@ -12,7 +12,7 @@ from apps.hello.forms import ProfileForm
 def index(request):
     """ My Profile Data Page """
     my_data = Person.objects.get(pk=1)
-    return render_to_response('index.html', dict(person=my_data))
+    return render(request, 'index.html', dict(person=my_data))
 
 
 @csrf_exempt
