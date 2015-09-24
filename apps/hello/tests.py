@@ -54,12 +54,27 @@ class IndexPage(TestCase):
         # requests > 0
         self.assertGreater(int(match.group(1)), 0)
 
-    def test_middleware(self):
-        """ Test adding data to database """
-        count_before = Req.objects.count()
-        self.client.get(reverse('home'))
-        count_after = Req.objects.count()
-        self.assertGreater(count_after, count_before)
+    def test_edit_link_tag(self):
+        """Test tag link"""
+        name = 'tagtester'
+        User.objects.create_superuser(name, 'tagtester@gmail.com',
+                                      name)
+        self.client.login(username=name, password=name)
+        correct_url = "/admin/hello/person/1/"
+        self.assertTrue('<a href="' + correct_url + '">(admin)</a>',
+                        self.client.get(reverse('home')).content.decode())
+        template = Template("{% load edit_link %} {% edit_link person %}")
+        person = Person.objects.get(pk=1)
+        rendered = template.render(Context({'person': person}))
+        self.assertIn(correct_url, rendered)
+
+
+class ReqPage(TestCase):
+    """ Test for requests page """
+    def test_template_usage_requests(self):
+        """ Test correct template """
+        page = self.client.get(reverse('requests'))
+        self.assertTemplateUsed(page, 'requests.html')
 
     def test_ajax(self):
         """ Test ajax request """
@@ -77,24 +92,32 @@ class IndexPage(TestCase):
         self.assertTrue('requests' in data)
         self.assertGreaterEqual(data['total'], len(data['requests']))
 
-    def test_template_usage_requests(self):
-        """ Test correct template """
-        page = self.client.get(reverse('requests'))
-        self.assertTemplateUsed(page, 'requests.html')
+    def test_middleware(self):
+        """ Test adding data to database """
+        count_before = Req.objects.count()
+        self.client.get(reverse('home'))
+        count_after = Req.objects.count()
+        self.assertGreater(count_after, count_before)
 
-    def test_edit_link_tag(self):
-        """Test tag link"""
-        name = 'tagtester'
-        User.objects.create_superuser(name, 'tagtester@gmail.com',
-                                      name)
-        self.client.login(username=name, password=name)
-        correct_url = "/admin/hello/person/1/"
-        self.assertTrue('<a href="' + correct_url + '">(admin)</a>',
-                        self.client.get(reverse('home')).content.decode())
-        template = Template("{% load edit_link %} {% edit_link person %}")
-        person = Person.objects.get(pk=1)
-        rendered = template.render(Context({'person': person}))
-        self.assertIn(correct_url, rendered)
+    def test_priority(self):
+        """ Test priority change """
+        self.client.get(reverse('home'))
+        req = Req.objects.last()
+        self.assertEqual(req.priority, 0)
+        data = {'read': [req.pk], 'priority1': req.pk}
+        self.client.get(reverse('requests'), data,
+                        HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        req = Req.objects.last()
+        self.assertEqual(req.priority, 1)
+        self.client.get(reverse('home'))
+        req2 = Req.objects.last()
+        self.assertEqual(req2.priority, 1)
+        self.assertNotEqual(req2, req)
+        data = {'read': [req.pk], 'priority0': req.pk}
+        self.client.get(reverse('requests'), data,
+                        HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        req2 = Req.objects.last()
+        self.assertEqual(req2.priority, 0)
 
 
 class EditPage(TestCase):
