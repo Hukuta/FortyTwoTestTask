@@ -26,7 +26,12 @@ def requests(request):
         read_ids = request.POST.getlist('ids[]')
         if read_ids:
             Req.objects.filter(pk__in=read_ids).update(read=True)
-        requests_list = Req.objects.filter(read=False).order_by('pk')[:10]
+        for priority in ('0', '1'):
+            for obj_pk in request.POST.getlist('priority' + priority):
+                req = Req.objects.get(pk=obj_pk)
+                Req.objects.filter(info=req.info).update(priority=priority)
+
+        requests_list = Req.objects.filter(read=False).order_by('-priority', 'pk')[:10]
         requests_json = serializers.serialize("json", requests_list)
         data['requests'] = json.loads(requests_json)
         return HttpResponse(json.dumps(data), content_type="application/json")
