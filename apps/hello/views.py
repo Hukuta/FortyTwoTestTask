@@ -31,7 +31,8 @@ def requests(request):
                 req = Req.objects.get(pk=obj_pk)
                 Req.objects.filter(info=req.info).update(priority=priority)
 
-        requests_list = Req.objects.filter(read=False).order_by('-priority', 'pk')[:10]
+        requests_list = Req.objects.filter(read=False).order_by('-priority',
+                                                                'pk')[:10]
         requests_json = serializers.serialize("json", requests_list)
         data['requests'] = json.loads(requests_json)
         return HttpResponse(json.dumps(data), content_type="application/json")
