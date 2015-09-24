@@ -88,7 +88,7 @@ class IndexPage(TestCase):
         User.objects.create_superuser(name, 'tagtester@gmail.com',
                                       name)
         self.client.login(username=name, password=name)
-        correct_url = "/admin/hello/profile/1/"
+        correct_url = "/admin/hello/person/1/"
         self.assertTrue('<a href="' + correct_url + '">(admin)</a>',
                         self.client.get(reverse('home')).content.decode())
         template = Template("{% load edit_link %} {% edit_link person %}")
