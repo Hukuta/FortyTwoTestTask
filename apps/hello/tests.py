@@ -3,15 +3,20 @@ import re
 import json
 from datetime import date
 from PIL import Image
+from StringIO import StringIO
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.contrib.admin.sites import AdminSite
 from apps.hello.admin import AdminPersons
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
+from django.template import Template, Context
+from django.db.models import get_apps, get_models
 from apps.hello.forms import ProfileForm
 from apps.hello.models import Person
 from apps.hello.models import Req
+from apps.hello.models import EntryChange
 
 
 class IndexPage(TestCase):
@@ -76,6 +81,20 @@ class IndexPage(TestCase):
         """ Test correct template """
         page = self.client.get(reverse('requests'))
         self.assertTemplateUsed(page, 'requests.html')
+
+    def test_edit_link_tag(self):
+        """Test tag link"""
+        name = 'tagtester'
+        User.objects.create_superuser(name, 'tagtester@gmail.com',
+                                      name)
+        self.client.login(username=name, password=name)
+        correct_url = "/admin/hello/profile/1/"
+        self.assertTrue('<a href="' + correct_url + '">(admin)</a>',
+                        self.client.get(reverse('home')).content.decode())
+        template = Template("{% load edit_link %} {% edit_link person %}")
+        person = Person.objects.get(pk=1)
+        rendered = template.render(Context({'person': person}))
+        self.assertIn(correct_url, rendered)
 
 
 class EditPage(TestCase):
@@ -214,3 +233,59 @@ class AdminActions(TestCase):
         page_uri = '/admin/hello/person/1/'
         page = self.client.get(page_uri)
         self.assertEqual(page.context['fieldset'].form.instance, person)
+
+
+class CommandsTest(TestCase):
+    """ Test  custom commands """
+
+    def test_models_info(self):
+        std_out = StringIO()
+        std_err = StringIO()
+        call_command('print_objects_count',
+                     stdout=std_out,
+                     stderr=std_err)
+        std_out.seek(0)
+        std_err.seek(0)
+
+        for app in get_apps():
+            for model in get_models(app):
+                objects_count = model.objects.count()
+                out_message = ('%s: objects: %s\n'
+                               % (model.__name__, objects_count))
+                error_message = ('error: %s: objects: %s\n'
+                                 % (model.__name__, objects_count))
+
+                self.assertEqual(std_out.readline(), out_message)
+                self.assertEqual(std_err.readline(), error_message)
+
+
+class SignalsTest(TestCase):
+    """ Test signal processors """
+    def last_log_check(self, action, model):
+        """ Checks action and model fields of last EntryChange obj"""
+        last_log = EntryChange.objects.last()
+        self.assertEqual(getattr(last_log, 'action'), action)
+        self.assertEqual(getattr(last_log, 'model'), model)
+
+    def test_person_create_edit_delete(self):
+        logs_count = EntryChange.objects.count()
+        new_data = {"first_name": "Nikita",
+                    "last_name": "Odarchenko",
+                    "date_of_birth": "1992-02-02",
+                    "contacts": "ICQ 912564",
+                    "bio": "Ukrainian developer",
+                    "email": "odarchenko.n.d@gmail.com",
+                    "jabber": "hukuta@khavr.com",
+                    "skype": "phpdreamer"}
+        person2 = Person.objects.create(**new_data)
+        self.assertGreater(EntryChange.objects.count(), logs_count)
+        self.last_log_check('create', 'Person')
+        person2.bio = 'test'
+        person2.save()
+        self.last_log_check('update', 'Person')
+        person2.delete()
+        self.last_log_check('delete', 'Person')
+
+    def test_req_create(self):
+        self.client.get(reverse('home'))
+        self.last_log_check('create', 'Req')
