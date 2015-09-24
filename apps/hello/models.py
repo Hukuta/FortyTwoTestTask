@@ -56,3 +56,10 @@ class Req(models.Model):
 
     def __unicode__(self):
         return self.info
+
+
+class EntryChange(models.Model):
+    """ Logging all changes in models """
+    action = models.CharField(max_length=7)
+    time = models.DateTimeField(auto_now=True, auto_now_add=True)
+    model = models.CharField(max_length=30)
