@@ -27,7 +27,7 @@ def requests(request):
         if read_ids:
             Req.objects.filter(pk__in=read_ids).update(read=True)
         for priority in ('0', '1'):
-            for obj_pk in request.POST.getlist('priority' + priority):
+            for obj_pk in request.POST.getlist('priority' + priority + '[]'):
                 req = Req.objects.get(pk=obj_pk)
                 Req.objects.filter(info=req.info).update(priority=priority)
 

@@ -71,6 +71,7 @@ class IndexPage(TestCase):
 
 class ReqPage(TestCase):
     """ Test for requests page """
+
     def test_template_usage_requests(self):
         """ Test correct template """
         page = self.client.get(reverse('requests'))
@@ -80,9 +81,9 @@ class ReqPage(TestCase):
         """ Test ajax request """
         self.client.get(reverse('home'))
         count_before = Req.objects.count()
-        ajax = self.client.get(
+        ajax = self.client.post(
             reverse('requests'),
-            {'read': []},
+            {'read[]': []},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
         count_after = Req.objects.count()
@@ -104,7 +105,7 @@ class ReqPage(TestCase):
         self.client.get(reverse('home'))
         req = Req.objects.last()
         self.assertEqual(req.priority, 0)
-        data = {'read': [req.pk], 'priority1': [req.pk]}
+        data = {'read': [req.pk], 'priority1[]': [req.pk]}
         self.client.post(reverse('requests'), data,
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         req_same = Req.objects.last()
@@ -114,7 +115,7 @@ class ReqPage(TestCase):
         req2 = Req.objects.last()
         self.assertEqual(req2.priority, 1)
         self.assertNotEqual(req2, req)
-        data = {'read': [req.pk], 'priority0': [req.pk]}
+        data = {'read': [req.pk], 'priority0[]': [req.pk]}
         self.client.post(reverse('requests'), data,
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         req2 = Req.objects.last()
@@ -286,6 +287,7 @@ class CommandsTest(TestCase):
 
 class SignalsTest(TestCase):
     """ Test signal processors """
+
     def last_log_check(self, action, model):
         """ Checks action and model fields of last EntryChange obj"""
         last_log = EntryChange.objects.last()
