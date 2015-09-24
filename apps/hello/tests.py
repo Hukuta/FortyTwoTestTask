@@ -239,6 +239,7 @@ class CommandsTest(TestCase):
     """ Test  custom commands """
 
     def test_models_info(self):
+        """ Test  print_objects_count command """
         std_out = StringIO()
         std_err = StringIO()
         call_command('print_objects_count',
@@ -268,6 +269,7 @@ class SignalsTest(TestCase):
         self.assertEqual(getattr(last_log, 'model'), model)
 
     def test_person_create_edit_delete(self):
+        """ Test signal when person CRUD """
         logs_count = EntryChange.objects.count()
         new_data = {"first_name": "Nikita",
                     "last_name": "Odarchenko",
@@ -287,5 +289,6 @@ class SignalsTest(TestCase):
         self.last_log_check('delete', 'Person')
 
     def test_req_create(self):
+        """ Test signal when request to home page """
         self.client.get(reverse('home'))
         self.last_log_check('create', 'Req')
