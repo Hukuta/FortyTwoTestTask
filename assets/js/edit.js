@@ -49,6 +49,10 @@ $(document).ready(function () {
                 input.each(function () {
                     $(this).attr('disabled', 'disabled')
                 });
+                textarea.each(function () {
+                    $(this).attr('disabled', 'disabled')
+                });
+                $("#ajax_answer").text('Loading...');
                 $('.errors').remove();
             },
             success: function (data, statusText, xhr, $form) {
