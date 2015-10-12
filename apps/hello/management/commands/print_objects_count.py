@@ -18,7 +18,7 @@ class Command(BaseCommand):
                 try:
                     objects_count = model.objects.count()
                 except OperationalError as err:
-                    self.stderr.write(err)
+                    self.stderr.write(str(err))
                     continue
                 self.stdout.write('%s: objects: %s\n'
                                   % (model.__name__, objects_count))
