@@ -3,7 +3,7 @@ SETTINGS=fortytwo_test_task.settings
 
 test:
 	PYTHONPATH=`pwd` DJANGO_SETTINGS_MODULE=$(SETTINGS) $(MANAGE) test
-	/bin/bash $(PWD)/run_command.sh `pwd` $(PYTHONPATH)/../bin/python
+	/bin/bash $(PWD)/run_command.sh $(PWD) "$(PYTHONPATH)/../bin/python"
 	flake8 --exclude '*migrations*' apps fortytwo_test_task
 
 run:
